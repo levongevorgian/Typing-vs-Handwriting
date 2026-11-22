@@ -1,0 +1,260 @@
+{
+  "primary": {
+    "outcome": "overall",
+    "estimate": 1.9917396322333332,
+    "se": 2.7422374089053165,
+    "t": 0.7263191821996269,
+    "df": 139.5796184619831,
+    "p": 0.46885935159857556,
+    "lower": -3.4299533895682286,
+    "upper": 7.413432654034895
+  },
+  "hedges_g": 0.12063928620717189,
+  "adjusted": {
+    "term": "Typing",
+    "estimate": 1.6534346335819627,
+    "se": 2.5415826441621654,
+    "t": 0.6505531651232292,
+    "p": 0.5164325052223383,
+    "lower": -3.372699513896081,
+    "upper": 6.679568781060007,
+    "HC3_se": 2.5923433157620184,
+    "HC3_lower": -3.427464900874738,
+    "HC3_upper": 6.7343341680386635,
+    "HC3_p_normal": 0.5235943195609685
+  },
+  "r_squared": 0.18070616776489523,
+  "interaction_p": 0.07191382383790895,
+  "bp_statistic": 7.5824993580865945,
+  "bp_p": 0.18079562874810706,
+  "rank_p": 0.8080192735277151,
+  "correlations": [
+    {
+      "group": "All participants",
+      "n": 142,
+      "pearson_r": 0.19344391930745383,
+      "p": 0.021076696804737775,
+      "lower": 0.029661833515823206,
+      "upper": 0.3471103526080677,
+      "spearman_rho": 0.17634497213991346,
+      "spearman_p": 0.035790429327582966
+    },
+    {
+      "group": "Typing",
+      "n": 68,
+      "pearson_r": 0.22888423519905426,
+      "p": 0.060457585408497674,
+      "lower": -0.010091570214678831,
+      "upper": 0.44312710674183214,
+      "spearman_rho": 0.23967409845696355,
+      "spearman_p": 0.04900410921405208
+    },
+    {
+      "group": "Handwriting",
+      "n": 74,
+      "pearson_r": 0.1697349541757604,
+      "p": 0.14824142470153362,
+      "lower": -0.06113485371957883,
+      "upper": 0.38336517380132196,
+      "spearman_rho": 0.10886848860596733,
+      "spearman_p": 0.3558370987432241
+    }
+  ],
+  "planning": [
+    {
+      "assumed_difference": 3,
+      "assumed_sd": 16.42127181828899,
+      "approx_power_current_n": 0.19263919548446587,
+      "approx_n_per_group_80pct": 471
+    },
+    {
+      "assumed_difference": 5,
+      "assumed_sd": 16.42127181828899,
+      "approx_power_current_n": 0.44148239085684454,
+      "approx_n_per_group_80pct": 170
+    },
+    {
+      "assumed_difference": 8,
+      "assumed_sd": 16.42127181828899,
+      "approx_power_current_n": 0.8264204683090701,
+      "approx_n_per_group_80pct": 67
+    },
+    {
+      "assumed_difference": 10,
+      "assumed_sd": 16.42127181828899,
+      "approx_power_current_n": 0.9520566698288775,
+      "approx_n_per_group_80pct": 43
+    }
+  ],
+  "tests": [
+    {
+      "outcome": "overall",
+      "estimate": 1.9917396322333332,
+      "se": 2.7422374089053165,
+      "t": 0.7263191821996269,
+      "df": 139.5796184619831,
+      "p": 0.46885935159857556,
+      "lower": -3.4299533895682286,
+      "upper": 7.413432654034895
+    },
+    {
+      "outcome": "factual",
+      "estimate": 0.452587957840052,
+      "se": 3.585571801758213,
+      "t": 0.12622476493654985,
+      "df": 138.9722469178095,
+      "p": 0.8997364414651561,
+      "lower": -6.636737170001609,
+      "upper": 7.541913085681713,
+      "holm_p": 0.9898443606693276
+    },
+    {
+      "outcome": "conceptual",
+      "estimate": 3.5308913066266,
+      "se": 3.5072870042744757,
+      "t": 1.0067300743632777,
+      "df": 139.27250106699034,
+      "p": 0.3158103920375069,
+      "lower": -3.403519290929111,
+      "upper": 10.465301904182311,
+      "holm_p": 0.9474311761125207
+    },
+    {
+      "outcome": "gap",
+      "estimate": 3.0783033487865508,
+      "se": 4.498367539967531,
+      "t": 0.6843156592777587,
+      "df": 138.15482105395267,
+      "p": 0.4949221803346638,
+      "lower": -5.816246556033765,
+      "upper": 11.972853253606868,
+      "holm_p": 0.9898443606693276
+    }
+  ],
+  "intervals": [
+    {
+      "group": "Typing",
+      "mean_low": 64.51566786007713,
+      "mean_high": 71.86861050161723,
+      "sd_low": 12.995835364996307,
+      "sd_high": 18.27902456569401,
+      "prediction_low": 37.65307477640481,
+      "prediction_high": 98.73120358528955,
+      "tolerance_low": 38.786637113922666,
+      "tolerance_high": 97.59764124777169,
+      "tolerance_factor": 1.9359998293504654
+    },
+    {
+      "group": "Handwriting",
+      "mean_low": 62.15151075644128,
+      "mean_high": 70.2492883407864,
+      "sd_low": 15.043625154101177,
+      "sd_high": 20.854355667629132,
+      "prediction_low": 31.13599403741852,
+      "prediction_high": 101.26480505980916,
+      "tolerance_low": 32.62726123612855,
+      "tolerance_high": 99.77353786109914,
+      "tolerance_factor": 1.9210864273870694
+    }
+  ],
+  "proportions": [
+    {
+      "group": "Typing",
+      "n": 68,
+      "at_least_70": 32,
+      "proportion": 0.47058823529411764,
+      "wilson_lower": 0.35673106421198947,
+      "wilson_upper": 0.5875907791127207
+    },
+    {
+      "group": "Handwriting",
+      "n": 74,
+      "at_least_70": 39,
+      "proportion": 0.527027027027027,
+      "wilson_lower": 0.4147735676194863,
+      "wilson_upper": 0.6366129307915197
+    }
+  ],
+  "categorical_p": 0.5016185922018603,
+  "figures": [
+    {
+      "name": "01_score_distributions",
+      "title": "Individual scores overlap substantially",
+      "caption": "Dots: participants; boxes: middle 50%; line: median; diamond: mean. All observations retained."
+    },
+    {
+      "name": "02_histograms",
+      "title": "Overall score distributions",
+      "caption": "Identical bins and axes; the last bin includes 100."
+    },
+    {
+      "name": "03_normal_probability",
+      "title": "Check the normal distribution assumption",
+      "caption": "Tail departures and bounded scores matter especially for individual prediction, variance and tolerance intervals."
+    },
+    {
+      "name": "04_mean_difference_intervals",
+      "title": "How large could the mean differences be?",
+      "caption": "Intervals are individual 95% intervals, not simultaneous family intervals. Secondary p-values are Holm-adjusted separately."
+    },
+    {
+      "name": "05_hypothesis_test",
+      "title": "Main two-sided test: p = 0.469",
+      "caption": "Shading represents both tails at least as far from zero as the observed statistic. The p-value is not the probability that the null is true."
+    },
+    {
+      "name": "06_question_type",
+      "title": "Does the group difference change with question type?",
+      "caption": "Lines summarize means, not individual change over time. The formal comparison uses conceptual minus factual within each participant."
+    },
+    {
+      "name": "07_lecture_means",
+      "title": "Lecture-specific samples differ",
+      "caption": "Small subgroups have wide intervals. These are descriptive means with marginal t intervals, not five independent confirmatory tests."
+    },
+    {
+      "name": "08_adjusted_comparison",
+      "title": "Accounting for lecture leaves the answer uncertain",
+      "caption": "Adjusted result uses an additive model with lecture indicators and a common typing effect; its approximate 95% interval uses HC3 standard errors and a normal critical value."
+    },
+    {
+      "name": "09_regression_diagnostics",
+      "title": "Check the lecture-adjusted model",
+      "caption": "Residual shape, unequal spread and influential observations limit model accuracy. Dashed Cook threshold 4/n is a screening rule, not an exclusion rule."
+    },
+    {
+      "name": "10_factual_conceptual",
+      "title": "Are factual and conceptual scores associated?",
+      "caption": "Each point is one participant. Correlation is exploratory and does not demonstrate causation; overall is not correlated with its own components."
+    },
+    {
+      "name": "11_illustrative_threshold",
+      "title": "An illustrative categorical comparison",
+      "caption": "70 is an exploratory threshold, not an official pass mark. Error bars are Wilson 95% confidence intervals."
+    },
+    {
+      "name": "12_power_planning",
+      "title": "Small effects need larger future studies",
+      "caption": "Normal planning approximation at two-sided alpha .05, with common SD estimated from this sample. This is scenario analysis, not evidence for the null."
+    },
+    {
+      "name": "13_interval_purposes",
+      "title": "Mean uncertainty differs from individual variation",
+      "caption": "Mean CIs and prediction intervals are 95%; tolerance intervals have 90% population content and 95% confidence under normality. Values beyond 100 expose the normal model limitation; they are not clipped."
+    }
+  ],
+  "audit": {
+    "rows": 142,
+    "unique_participants": 142,
+    "missing_cells": 0,
+    "rows_removed": 0,
+    "data_sha256": "d3912fa55daba314c6fa1970e8671f973b64bd538e5e18755c82a504dbca4316"
+  },
+  "versions": {
+    "python": "3.13.1",
+    "numpy": "2.4.4",
+    "pandas": "3.0.2",
+    "scipy": "1.17.1",
+    "matplotlib": "3.10.8"
+  }
+}

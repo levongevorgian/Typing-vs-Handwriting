@@ -1,0 +1,5 @@
+method,statistic,p
+Mann-Whitney (tie-corrected asymptotic),2576.0,0.8080192735277151
+Brown-Forsythe variance check,0.7637683570209002,0.38364844509511603
+Shapiro-Wilk Typing,0.9853763782844378,0.6100654096594302
+Shapiro-Wilk Handwriting,0.9507931446858494,0.00593354926324866

@@ -1,0 +1,120 @@
+"""Create the plain-language PDF and HTML report from verified analysis outputs."""
+from pathlib import Path
+import json, csv, html
+from reportlab.platypus import SimpleDocTemplate,Paragraph,Spacer,Image,PageBreak,Table,TableStyle
+from reportlab.lib.styles import getSampleStyleSheet,ParagraphStyle
+from reportlab.lib import colors
+from reportlab.lib.utils import ImageReader
+P=Path(__file__).resolve().parents[1];r=json.loads((P/'results/analysis.json').read_text());t=r['tests'];a=r['adjusted']
+def read(name):return list(csv.DictReader((P/'results'/f'{name}.csv').open()))
+def f(x):return f'{float(x):.2f}'
+def pp(x):return f'{float(x):.3f}'
+pages=[]
+def page(title,paragraphs,figs=(),table=None):pages.append(dict(title=title,paragraphs=paragraphs,figs=figs,table=table))
+page('Typing vs. Handwriting in Lectures',[
+'<b>A clear analysis of short-term quiz performance</b><br/>Applied Statistics for Engineers - IESM 324 | 22 November 2026',
+'<b>Question:</b> After watching a recorded lecture, do students score higher when they type notes or write them by hand?',
+'<b>Answer:</b> Typing scored 1.99 points higher on average in this sample. However, the 95% confidence interval runs from a 3.43-point handwriting advantage to a 7.41-point typing advantage. The data do not establish that either method is better, and they do not establish equivalence.',
+'<b>What we analyzed:</b> Public participant data from Urry et al. (2021), a direct replication of an earlier note-taking experiment. There are 142 participants: 68 typing and 74 handwriting. Each participant appears once, watched one of five recorded talks, and completed a quiz after a delay of about 30 minutes without studying their notes.',
+'<b>How to read this report:</b> First describe the sample; then estimate and test the main difference; then examine question type and lecture effects. Supporting examples demonstrate correlation, categorical tests, power and different kinds of intervals. No bootstrap methods are used.',
+'<b>Scope:</b> This is a course reanalysis of the packaged six-variable dataset, not a reproduction of every analysis or meta-analysis in the paper. The main question was chosen in the earlier project work; the data and previous results were already known, so this is not a newly preregistered confirmatory study.'
+])
+summary=read('descriptive_statistics')
+page('1. Start by describing the sample',[
+'<b>Purpose:</b> Understand what was observed before making claims about a wider population. We checked identifiers, missing values, group labels and score ranges. All 142 identifiers are unique; there are no missing cells or out-of-range scores. No observations were removed.',
+'<b>What the numbers show:</b> Typing has the higher overall mean, while handwriting has the higher median. This is possible because the mean responds more to low or high values. The standard deviations are around 15-17 points, much larger than the 1.99-point mean gap.',
+'<b>Reading the chart:</b> Each dot is a student. The box covers the middle half of scores; the line is the median; the diamond is the mean. Overlap describes individual variation and is not itself a hypothesis test.'
+],['01_score_distributions'],[['Outcome','Group','n','Mean','Median','SD']]+[[z['outcome'].title(),z['group'],z['n'],f(z['mean']),f(z['median']),f(z['sd'])] for z in summary if z['outcome']!='gap'])
+page('2. Check shape and assumptions',[
+'<b>Purpose:</b> Check whether the methods provide reasonable approximations. Histograms show the distribution of individual scores. A normal probability plot would look approximately straight if the scores followed a normal distribution.',
+'<b>What we see:</b> Scores are bounded between 0 and 100 and show tail departures from normality. A normal distribution is therefore an approximation. With 68 and 74 participants, inference on means is less sensitive to nonnormal individual scores than inference on a single future score or population spread.',
+'<b>Assumptions:</b> Participants are treated as independent; typing and handwriting are separate groups. Welch inference allows unequal variances. Random assignment supports comparisons under the experiment, but the student sample is not a random sample of all learners. Shared sessions or other unrecorded clustering cannot be checked with this file. No diagnostic is used as a mechanical pass/fail rule to choose the main test.'
+],['02_histograms','03_normal_probability'])
+page('3. Estimate and test the main difference',[
+'<b>Purpose:</b> Distinguish the observed sample gap from an uncertain population difference. Define delta as the typing mean minus the handwriting mean. Positive values favor typing.',
+'<b>Hypotheses:</b> H0: delta = 0; H1: delta is not 0. We use a two-sided Welch t-test with a 5% significance level. The estimated difference is <b>+1.99 points</b>, standard error <b>2.74</b>, t = <b>0.726</b>, degrees of freedom = <b>139.58</b>, and p = <b>0.469</b>.',
+'<b>Decision:</b> Because 0.469 exceeds 0.05, fail to reject H0. If equal population means and the test assumptions held, a t statistic at least this far from zero in either direction would occur about 47% of the time. This is not a 47% probability that H0 is true.',
+'<b>Precision and practical meaning:</b> The 95% interval is <b>[-3.43, +7.41]</b> points. Across repeated comparable studies, this procedure would cover the population difference 95% of the time. The current interval includes zero and advantages for either method. Hedges g = <b>0.121</b>, a small sample standardized difference; this estimate does not settle which differences matter educationally.',
+'<b>Important distinction:</b> A nonsignificant test does not demonstrate equivalence. No practical equivalence margin was specified, and the interval is too wide to dismiss every educationally relevant difference.'
+],['05_hypothesis_test'])
+page('4. Factual and conceptual questions',[
+'<b>Purpose:</b> Ask whether the typing-handwriting difference changes with question type. The factual difference is +0.45 points; the conceptual difference is +3.53 points. Those two descriptive numbers alone do not prove the margins differ.',
+'<b>Respect the pairing:</b> Each participant answered both kinds of questions. We first compute conceptual minus factual for each person, then compare that gap between the two independent note-taking groups using Welch inference. Treating factual and conceptual scores as unrelated samples would discard this pairing.',
+f'<b>Result:</b> Difference in gaps = {f(t[3]["estimate"])} points; 95% CI [{f(t[3]["lower"])}, {f(t[3]["upper"])}]; p = {pp(t[3]["p"])}. The data do not establish a change in the group difference across question types.',
+'<b>Multiple testing:</b> Factual, conceptual and gap comparisons form one exploratory family of three tests. Holm correction controls the family error rate for those three; the main overall test is reported separately. The intervals shown are marginal 95% intervals and are not simultaneous intervals. The wider supporting analyses remain exploratory and cannot be mined for isolated significant claims.'
+],['06_question_type','04_mean_difference_intervals'])
+page('5. Account for the lecture',[
+'<b>Purpose:</b> Students watched different talks, and some quizzes may be harder. We estimate the group difference after giving each lecture its own baseline score.',
+'<b>Model:</b> Overall score = intercept + typing effect + four lecture indicators + error. The reference lecture is algorithms; typing is coded 1 and handwriting 0. This is multiple linear regression with categorical predictors. With typing alone, the least-squares slope equals the raw +1.99-point mean difference, although the usual regression standard error assumes equal error variance and differs from Welch.',
+f'<b>Adjusted result:</b> Typing effect = <b>{f(a["estimate"])}</b> points; 95% CI <b>[{f(a["HC3_lower"])}, {f(a["HC3_upper"])}]</b>; p = {pp(a["HC3_p_normal"])}. R-squared = {f(100*r["r_squared"])}%. This approximate adjusted interval uses HC3 standard errors with a normal critical value, as in the earlier Stage 5. Classical regression t intervals are also saved. Accounting for talk changes the estimate little and leaves the conclusion uncertain.',
+f'<b>Factorial extension:</b> A condition-by-lecture interaction allows the typing effect to vary across talks. Comparing that model to the additive model gives p = {pp(r["interaction_p"])} (four extra terms). The test does not establish different effects by lecture at 5%, but small cells limit precision; it also does not validate a common effect as a fact.'
+],['07_lecture_means','08_adjusted_comparison'])
+cor=r['correlations'][0]
+page('6. Diagnose the model and examine association',[
+'<b>Purpose:</b> Check model limitations and study whether factual and conceptual performance move together. Residuals are observed scores minus model predictions. Curvature, unequal spread, unusual tails and influential observations can make standard model intervals less reliable.',
+f'<b>Diagnostics:</b> The Breusch-Pagan unequal-variance diagnostic gives p = {pp(r["bp_p"])}. This does not prove constant variance. Cook\'s distance flags observations that deserve review, not automatic deletion. All rows remain in the analysis. The regression table also provides HC3 standard errors as a sensitivity check for unequal variance.',
+f'<b>Correlation:</b> Across participants, factual and conceptual scores have Pearson r = {f(cor["pearson_r"])} with a Fisher-transform 95% CI [{f(cor["lower"])}, {f(cor["upper"])}]. Group-specific Pearson and Spearman results are saved separately. This is association, not causation; lecture difficulty and other factors may contribute. We avoid correlating overall score with its own components.',
+f'<b>Distribution-free sensitivity:</b> The tie-corrected two-sided Mann-Whitney test gives p = {pp(r["rank_p"])}. It compares relative ranks/distributions, not the mean difference tested by Welch. A median-shift interpretation requires stronger shape assumptions; it cannot prove the same null as the main test.'
+],['09_regression_diagnostics','10_factual_conceptual'])
+page('7. A categorical example and future power',[
+'<b>Purpose:</b> Demonstrate a proportion comparison using an explicit, illustrative threshold: an overall score of at least 70. This is not an official pass mark, and the continuous outcome remains the main analysis.',
+f'<b>Categorical method:</b> We compare proportions using a pooled two-proportion z-test and the equivalent Pearson 2-by-2 chi-square test without continuity correction. Their two-sided p-values agree: p = {pp(r["categorical_p"])}. Wilson 95% intervals describe each group proportion. Expected counts are recorded in the results. The threshold was not selected to maximize significance.',
+'<b>Power answers a future-design question:</b> How often would a study detect an assumed true difference? Using a common SD of 16.42 and a normal planning approximation, a 5-point difference has about 44% power at the current group sizes. Roughly 170 participants per group would give 80% power for that scenario. These are planning estimates, not a retrospective probability that the main conclusion is correct.',
+'<b>Limits:</b> Power changes with the true spread, effect size, allocation and model. These calculations assume independent observations and a common SD; they are not exact Welch sample-size guarantees. We show several assumed effects rather than using the observed effect as proof of low or high power.'
+],['11_illustrative_threshold','12_power_planning'])
+page('8. Three intervals, three different questions',[
+'<b>Confidence interval for a mean:</b> Where might a group\'s average score be? Its uncertainty uses SD divided by the square root of n. This is much narrower than individual variation.',
+'<b>95% prediction interval:</b> Where might one new participant\'s score fall under the same normal model? It uses SD multiplied by sqrt(1 + 1/n), plus a t multiplier, and is therefore much wider.',
+'<b>90% content / 95% confidence tolerance interval:</b> Estimate a range intended to contain at least 90% of the group\'s population score distribution, with 95% confidence under a normal model. This is neither a mean CI nor a 95% prediction interval. The normal tolerance factor is solved numerically by integrating over independent normal sample-mean and chi-square sample-variance distributions.',
+'<b>Assumption warning:</b> Prediction, tolerance and chi-square intervals for SD rely more strongly on normal individual scores. Some upper limits exceed the physical maximum of 100, exposing model mismatch. We preserve them as model-based course illustrations, do not clip them while retaining nominal coverage claims, and do not use them as literal score guarantees. The saved table includes mean, SD, prediction and tolerance intervals.'
+],['13_interval_purposes'],[['Group','Mean 95% CI','SD 95% CI','Prediction 95%','Tolerance 90/95']]+[[z['group'],f'{f(z["mean_low"])} to {f(z["mean_high"])}',f'{f(z["sd_low"])} to {f(z["sd_high"])}',f'{f(z["prediction_low"])} to {f(z["prediction_high"])}',f'{f(z["tolerance_low"])} to {f(z["tolerance_high"])}'] for z in r['intervals']])
+page('9. How the calculations work',[
+'<b>Descriptive statistics:</b> Sample mean = sum of scores / n. Sample variance = sum of squared distances from the mean / (n - 1). SD is the square root of that variance. Quartiles use linear interpolation; IQR = Q3 - Q1. A 1.5-IQR fence flags unusual scores without deleting them.',
+'<b>Welch calculation:</b> Let u = sT squared / nT and v = sH squared / nH. Standard error = sqrt(u + v). t = (meanT - meanH) / SE. Degrees of freedom = (u + v) squared / [u squared / (nT - 1) + v squared / (nH - 1)]. The 95% CI is the observed difference plus or minus the 97.5th percentile of this t distribution multiplied by SE.',
+'<b>Linear combinations and uncertainty:</b> For a person\'s gap C - F, variance = Var(C) + Var(F) - 2 Cov(C,F). Computing each gap directly preserves the covariance. For two independent group means, their variances add in the difference; this is why Welch uses u + v.',
+'<b>Regression:</b> Least squares chooses coefficients minimizing squared residuals. Classical coefficient intervals use the residual variance and a t distribution with n minus the number of fitted coefficients degrees of freedom. HC3 replaces that covariance estimate using squared residuals and leverage adjustments. Nested F-tests compare improvement in residual sum of squares per added term.',
+'<b>Verification:</b> The Welch calculations are independently checked against SciPy. The categorical z statistic squared is checked against Pearson chi-square. The main estimate and intervals also match the earlier project stages. The input has a recorded SHA-256 fingerprint. Full precision is preserved in CSV and JSON; the report rounds for readability.'
+])
+page('10. Course coverage and interpretation limits',[
+'<b>Included from the Fall 2026 syllabus:</b> sampling and descriptive statistics; visualization; distributions and probability plots; point estimation and the CLT; uncertainty of linear combinations; mean, difference, SD, prediction and tolerance intervals; hypothesis tests; distribution-free and categorical tests; multiple testing; power; correlation; simple and multiple regression; and a condition-by-lecture factorial interaction.',
+'<b>Not forced into this question:</b> Counting exercises and discrete distribution models are not separate analyses of the continuous scores. Instrument measurement-error propagation would require measurement-error information that this dataset does not provide. Control charts need a meaningful process order/time structure, which is absent. Bayesian analysis would require an explicit prior and a separate inferential framework; it is not needed here. Bootstrap methods are excluded throughout.',
+'<b>Design limitations:</b> The sample consists of students from one setting. The outcome is immediate learning after a brief delay, not retention days later. The six columns lack study habits, prior knowledge, note length, verbatim overlap, session identifiers and item-level scores. We therefore cannot analyze those mechanisms or fully reproduce the paper\'s models.',
+'<b>What to say in the presentation:</b> "Typing averaged about two points higher, but our uncertainty interval spans advantages for either method. Adjusting for the lecture does not change that conclusion. This experiment does not establish that typing and handwriting are equally effective, and it does not answer what happens after studying notes or after several days."',
+'<b>What a stronger next study would do:</b> Specify an educationally meaningful effect before collecting data, plan a suitable sample size, record sessions, and measure both immediate and delayed retention. An equivalence question should have a justified margin and an appropriate design.'
+])
+page('11. Sources, files and reproducibility',[
+'<b>Primary paper:</b> Urry, H. L., et al. (2021). <i>Don\'t Ditch the Laptop Just Yet: A Direct Replication of Mueller and Oppenheimer\'s (2014) Study 1 Plus Mini Meta-Analyses Across Similar Studies.</i> Psychological Science, 32(3), 326-339. DOI: <link href="https://doi.org/10.1177/0956797620965541" color="blue">10.1177/0956797620965541</link>.',
+'<b>Dataset:</b> afex::laptop_urry, 142 rows and six columns. <link href="https://singmann.r-universe.dev/afex/doc/manual.html#laptop_urry" color="blue">Package data documentation</link>; <link href="https://singmann.r-universe.dev/afex/data/laptop_urry/csv" color="blue">CSV endpoint</link>; <link href="https://osf.io/tr868/" color="blue">authors\' OSF archive</link>. The local CSV was carried forward unchanged from the earlier project.',
+'<b>Label discrepancy:</b> The paper\'s abstract reverses the group counts. The Methods section, packaged data and detailed afex documentation support 68 laptop and 74 longhand. We retain those original condition labels rather than changing them to match the abstract.',
+'<b>Course reference:</b> IESM 324 Applied Statistics for Engineers, Ashot Abrahamyan, Fall 2026, August 2026 syllabus. The syllabus and lecture PDFs are consulted locally and are not redistributed in this project.',
+'<b>Project map:</b> data/ contains the original CSV and dictionary; analysis/ contains reproducible calculations and report generation; results/ contains numerical tables and the audit; visualizations/ contains 13 charts, each in PNG and SVG; reports/ contains this PDF and an HTML version; docs/ contains methods, course mapping and a visualization guide.',
+'<b>Rebuild:</b> Install requirements.txt in a Python environment. Run python analysis/analyze.py, then python analysis/build_report.py. Run python analysis/validate.py for data, numerical and output checks. Saved dependency versions appear in results/analysis.json. The repository README is the entry point.',
+'<b>Provenance:</b> This report and the code were prepared with AI assistance and checked against the data and earlier results. The student group should understand the analysis, review the writing and follow its course disclosure requirements. The supplied paper remains linked rather than redistributed.'
+])
+styles=getSampleStyleSheet();styles.add(ParagraphStyle(name='BodyClear',fontName='Helvetica',fontSize=10.5,leading=15,spaceAfter=11,textColor=colors.HexColor('#26384a')));styles['Heading1'].textColor=colors.HexColor('#173e67');styles['Heading1'].fontSize=23;styles['Heading1'].leading=27
+story=[]
+for i,p in enumerate(pages):
+ if i:story.append(PageBreak())
+ story.extend([Paragraph(p['title'],styles['Heading1']),Spacer(1,12)])
+ for text in p['paragraphs']:story.append(Paragraph(text,styles['BodyClear']))
+ if p['table']:
+  data=[[Paragraph(str(x),ParagraphStyle('cell',fontName='Helvetica',fontSize=8,leading=10)) for x in row] for row in p['table']]
+  widths=([90,105,85,105,110] if len(data[0])==5 else [82,96,36,65,65,65]);tb=Table(data,colWidths=widths,repeatRows=1,hAlign='LEFT');tb.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),colors.HexColor('#e7eff8')),('VALIGN',(0,0),(-1,-1),'TOP'),('BOTTOMPADDING',(0,0),(-1,-1),7),('LINEBELOW',(0,0),(-1,0),.6,colors.HexColor('#9db3c9'))]));story.extend([tb,Spacer(1,12)])
+ for name in p['figs']:
+  path=P/'visualizations'/f'{name}.png';w,h=ImageReader(str(path)).getSize();maxh=175 if len(p['figs'])==2 else 220;scale=min(495/w,maxh/h);story.append(Image(str(path),width=w*scale,height=h*scale));z=next(x for x in r['figures'] if x['name']==name);story.append(Paragraph(z['caption'],ParagraphStyle('cap',fontSize=8,leading=11,textColor=colors.HexColor('#526276'),spaceAfter=8)))
+def footer(c,doc):
+ c.setFont('Helvetica',8);c.setFillColor(colors.HexColor('#526276'));c.drawString(42,25,'IESM 324 | Typing vs. Handwriting');c.drawRightString(570,25,str(doc.page))
+SimpleDocTemplate(str(P/'reports/analysis_report.pdf'),pagesize=(612,792),leftMargin=42,rightMargin=42,topMargin=36,bottomMargin=42,title='Typing vs. Handwriting: Analysis and Explanation',author='Applied Statistics Project').build(story,onFirstPage=footer,onLaterPages=footer)
+parts=['<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Typing vs. Handwriting - Analysis report</title><style>body{font:17px/1.6 system-ui;color:#26384a;background:#edf2f7;margin:0}main{max-width:1050px;margin:auto;background:white;padding:40px}h1{color:#173e67;line-height:1.2}section{margin-bottom:65px}img{max-width:100%}table{border-collapse:collapse;font-size:14px;width:100%}td,th{padding:9px;border-bottom:1px solid #ddd}th{background:#e7eff8}figcaption{font-size:14px;color:#526276}nav a{display:block} @media print{body{background:white}section{break-before:page}figure{break-inside:avoid}}</style><main><nav><b>Contents</b>']
+parts += [f'<a href="#s{i}">{html.escape(p["title"])}</a>' for i,p in enumerate(pages)];parts+=['</nav>']
+for i,p in enumerate(pages):
+ parts += [f'<section id="s{i}"><h1>{html.escape(p["title"])}</h1>']
+ for text in p['paragraphs']:
+  import re
+  text=re.sub(r'<link href="([^"]+)" color="blue">',r'<a href="\1">',text).replace('</link>','</a>');parts.append('<p>'+text+'</p>')
+ if p['table']:parts.append('<table>'+''.join('<tr>'+''.join(f'<td>{html.escape(str(x))}</td>' for x in row)+'</tr>' for row in p['table'])+'</table>')
+ for name in p['figs']:
+  z=next(x for x in r['figures'] if x['name']==name);parts.append(f'<figure><img src="../visualizations/{name}.svg" alt="{html.escape(z["title"])}"><figcaption>{html.escape(z["caption"])}</figcaption></figure>')
+ parts.append('</section>')
+parts.append('</main></html>');(P/'reports/analysis_report.html').write_text(''.join(parts));(P/'results/report_content.json').write_text(json.dumps(pages,indent=2))
+print('Report built:',len(pages),'sections')
