@@ -179,67 +179,67 @@
   "figures": [
     {
       "name": "01_score_distributions",
-      "title": "Individual scores overlap substantially",
+      "title": "Score Distributions by Note-Taking Method",
       "caption": "Dots: participants; boxes: middle 50%; line: median; diamond: mean. All observations retained."
     },
     {
       "name": "02_histograms",
-      "title": "Overall score distributions",
+      "title": "Overall Score Distributions",
       "caption": "Identical bins and axes; the last bin includes 100."
     },
     {
       "name": "03_normal_probability",
-      "title": "Check the normal distribution assumption",
+      "title": "Normal Probability Plots of Overall Scores",
       "caption": "Tail departures and bounded scores matter especially for individual prediction, variance and tolerance intervals."
     },
     {
       "name": "04_mean_difference_intervals",
-      "title": "How large could the mean differences be?",
+      "title": "Mean Differences and 95% Confidence Intervals",
       "caption": "Intervals are individual 95% intervals, not simultaneous family intervals. Secondary p-values are Holm-adjusted separately."
     },
     {
       "name": "05_hypothesis_test",
-      "title": "Main two-sided test: p = 0.469",
+      "title": "Welch Two-Sample t-Test for Overall Scores",
       "caption": "Shading represents both tails at least as far from zero as the observed statistic. The p-value is not the probability that the null is true."
     },
     {
       "name": "06_question_type",
-      "title": "Does the group difference change with question type?",
+      "title": "Mean Scores by Question Type and Note-Taking Method",
       "caption": "Lines summarize means, not individual change over time. The formal comparison uses conceptual minus factual within each participant."
     },
     {
       "name": "07_lecture_means",
-      "title": "Lecture-specific samples differ",
+      "title": "Mean Overall Scores by Lecture and Note-Taking Method",
       "caption": "Small subgroups have wide intervals. These are descriptive means with marginal t intervals, not five independent confirmatory tests."
     },
     {
       "name": "08_adjusted_comparison",
-      "title": "Accounting for lecture leaves the answer uncertain",
+      "title": "Unadjusted and Lecture-Adjusted Mean Differences",
       "caption": "Adjusted result uses an additive model with lecture indicators and a common typing effect; its approximate 95% interval uses HC3 standard errors and a normal critical value."
     },
     {
       "name": "09_regression_diagnostics",
-      "title": "Check the lecture-adjusted model",
+      "title": "Lecture-Adjusted Regression Diagnostics",
       "caption": "Residual shape, unequal spread and influential observations limit model accuracy. Dashed Cook threshold 4/n is a screening rule, not an exclusion rule."
     },
     {
       "name": "10_factual_conceptual",
-      "title": "Are factual and conceptual scores associated?",
+      "title": "Association Between Factual and Conceptual Scores",
       "caption": "Each point is one participant. Correlation is exploratory and does not demonstrate causation; overall is not correlated with its own components."
     },
     {
       "name": "11_illustrative_threshold",
-      "title": "An illustrative categorical comparison",
+      "title": "Proportions of Participants Scoring at Least 70",
       "caption": "70 is an exploratory threshold, not an official pass mark. Error bars are Wilson 95% confidence intervals."
     },
     {
       "name": "12_power_planning",
-      "title": "Small effects need larger future studies",
+      "title": "Statistical Power by Assumed Mean Difference",
       "caption": "Normal planning approximation at two-sided alpha .05, with common SD estimated from this sample. This is scenario analysis, not evidence for the null."
     },
     {
       "name": "13_interval_purposes",
-      "title": "Mean uncertainty differs from individual variation",
+      "title": "Confidence, Prediction and Tolerance Intervals",
       "caption": "Mean CIs and prediction intervals are 95%; tolerance intervals have 90% population content and 95% confidence under normality. Values beyond 100 expose the normal model limitation; they are not clipped."
     }
   ],
